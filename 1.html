@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <title>对话框</title>
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --card: #fff;
+            --text: #3a3a3a;
+            --neutral: #f0f0f0;
+            --neutral-text: #666;
+            --warm: #ff6b81;
+            --warm-text: #fff;
+            --radius: 20px;
+            --btn-radius: 25px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            height: 100dvh;
+            width: 100dvw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+        .modal {
+            position: relative;
+            overflow: hidden;
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 32px 24px 24px;
+            width: 82vw;
+            max-width: 380px;
+            min-width: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, .08);
+            animation: appear .5s cubic-bezier(.175, .885, .32, 1.275);
+        }
+        @keyframes appear {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .modal::before {
+            content: '';
+            position: absolute;
+            top: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 36px;
+            height: 4px;
+            border-radius: 2px;
+            background: #e0e0e0;
+            opacity: .6;
+            z-index: 0;
+        }
+        .modal-text {
+            text-align: center;
+            font-size: 17px;
+            line-height: 1.7;
+            color: var(--text);
+            letter-spacing: .3px;
+            transition: opacity .25s, visibility .25s;
+            z-index: 1;
+            position: relative;
+            padding: 8px 4px;
+            margin-top: 6px;
+        }
+        .modal-text.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            width: 100%;
+            justify-content: center;
+            z-index: 1;
+            position: relative;
+        }
+        .btn {
+            flex: 1;
+            min-width: 90px;
+            max-width: 150px;
+            padding: 13px 20px;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: .5px;
+            border: none;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            outline: none;
+            transition: all .35s cubic-bezier(.4, 0, .2, 1);
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .btn-neutral {
+            background: var(--neutral);
+            color: var(--neutral-text);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+        .btn-warm {
+            background: var(--warm);
+            color: var(--warm-text);
+            box-shadow: 0 4px 14px rgba(255, 107, 129, .3);
+        }
+        /* 铺满卡片的按钮样式 */
+        .btn.expanded {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--radius);
+            z-index: 10;
+            max-width: none;
+            flex: none;
+            font-size: 18px;
+            letter-spacing: 1px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, .15);
+        }
+        .btn-warm.expanded {
+            box-shadow: 0 14px 40px rgba(255, 107, 129, .4);
+        }
+        .btn-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        @media screen and (max-width:360px) {
+            .modal {
+                width: 88vw;
+                padding: 28px 18px 20px;
+                gap: 20px;
+                border-radius: 18px;
+            }
+            .modal-text {
+                font-size: 15.5px;
+                line-height: 1.65;
+            }
+            .btn {
+                padding: 12px 16px;
+                font-size: 15px;
+                min-width: 75px;
+            }
+            .btn-group {
+                gap: 10px;
+            }
+            .btn.expanded {
+                border-radius: 18px;
+                font-size: 16px;
+            }
+            .modal::before {
+                top: 10px;
+                width: 30px;
+                height: 3px;
+            }
+        }
+        @media screen and (min-width:420px) {
+            .modal {
+                padding: 36px 28px 28px;
+                gap: 28px;
+            }
+            .modal-text {
+                font-size: 18px;
+                line-height: 1.75;
+            }
+            .btn {
+                padding: 14px 24px;
+                font-size: 17px;
+            }
+            .btn.expanded {
+                font-size: 20px;
+            }
+            .btn-group {
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="modal" id="modal">
+        <span class="modal-text" id="modalText">其实上次我只想问一下你的想法</span>
+        <div class="btn-group">
+            <button class="btn btn-neutral" id="btnKnow">懒得听</button>
+            <button class="btn btn-warm" id="btnOk">知道了</button>
+        </div>
+    </div>
+    <script>
+        (function() {
+            // ========== 自定义内容（按顺序循环展示）==========
+            const contents = [
+                '其实上次我只想问一下你的想法',
+                '并没有说不合适拒绝联系的意思',
+                '不合适是我觉得我现在阶段不稳定',
+                '说完了',
+               
+            ];
+            // =============================================
+
+            const modalText = document.getElementById('modalText');
+            const btnKnow = document.getElementById('btnKnow');
+            const btnOk = document.getElementById('btnOk');
+            const allBtns = [btnKnow, btnOk];
+            let expandedBtn = null;
+            let contentIndex = 0;
+
+            function getOther(btn) {
+                return btn === btnKnow ? btnOk : btnKnow;
+            }
+
+            function handleClick(btn) {
+                if (expandedBtn === null) {
+                    // 第一次点击：放大当前按钮，隐藏文字和另一个按钮
+                    expandedBtn = btn;
+                    btn.classList.add('expanded');
+                    modalText.classList.add('hidden');
+                    getOther(btn).classList.add('btn-hidden');
+                } else {
+                    // 第二次点击：恢复按钮大小，显示文字，切换内容
+                    expandedBtn.classList.remove('expanded');
+                    modalText.classList.remove('hidden');
+                    allBtns.forEach(b => b.classList.remove('btn-hidden'));
+                    contentIndex = (contentIndex + 1) % contents.length;
+                    modalText.textContent = contents[contentIndex];
+                    expandedBtn = null;
+                }
+            }
+
+            btnKnow.addEventListener('click', () => handleClick(btnKnow));
+            btnOk.addEventListener('click', () => handleClick(btnOk));
+
+            // 初始化内容
+            modalText.textContent = contents[0];
+        })();
+    </script>
+</body>
+</html>
